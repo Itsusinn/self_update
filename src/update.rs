@@ -145,10 +145,10 @@ pub trait ReleaseUpdate {
         let current_version = self.current_version();
         let target = self.target();
         let show_output = self.show_output();
-        println(show_output, &format!("Checking target-arch... {}", target));
+        println(show_output, &t!("check-target-arch",target_arch = &target));
         println(
             show_output,
-            &format!("Checking current version... v{}", current_version),
+            &t!("check-current-version", version = &current_version)
         );
 
         let release = match self.target_version() {
@@ -169,15 +169,10 @@ pub trait ReleaseUpdate {
                             current_version, release.version
                         ),
                     );
-                    let qualifier =
-                        if version::bump_is_compatible(&current_version, &release.version)? {
-                            ""
-                        } else {
-                            "*NOT* "
-                        };
+                    let qualifier =version::bump_is_compatible(&current_version, &release.version)?;
                     println(
                         show_output,
-                        &format!("New release is {}compatible", qualifier),
+                        if qualifier { t!("compatible") } else { t!("not-compatible") }.as_str()
                     );
                 }
                 release
@@ -194,14 +189,16 @@ pub trait ReleaseUpdate {
 
         let prompt_confirmation = !self.no_confirm();
         if self.show_output() || prompt_confirmation {
-            println!("\n{} release status:", bin_name);
-            println!("  * Current exe: {:?}", bin_install_path);
-            println!("  * New exe release: {:?}", target_asset.name);
-            println!("  * New exe download url: {:?}", target_asset.download_url);
-            println!("\nThe new release will be downloaded/extracted and the existing binary will be replaced.");
+            print!("\n");
+            println!("{}",t!("prompt",
+                bin_name = &bin_name,
+                bin_install_path = bin_install_path.to_str().unwrap_or(""),
+                target_asset_name = &target_asset.name,
+                target_asset_url = &target_asset.download_url
+            ));
         }
         if prompt_confirmation {
-            confirm("Do you want to continue? [Y/n] ")?;
+            confirm(&t!("prompt-confirm",bin_name = &bin_name));
         }
 
         let tmp_archive_dir_prefix = format!("{}_download", bin_name);

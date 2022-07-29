@@ -1,0 +1,14 @@
+---
+en-US:
+  check-target-arch: Checking target-arch... %{target_arch}
+  check-current-version: Checking current version... v%{version}
+  prompt: |
+    %{bin_name} release status
+    Current exe: %{bin_install_path}
+    New exe release: %{target_asset_name}
+    New exe download url: %{target_asset_url}
+
+    The new release will be downloaded/extracted and the existing binary will be replaced.
+  prompt-confirm: Do you want to continue? [Y/n]
+  compatible: New release is compatible
+  not-compatible: New release is *Not* compatible

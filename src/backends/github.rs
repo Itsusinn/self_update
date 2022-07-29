@@ -249,6 +249,11 @@ impl UpdateBuilder {
         Default::default()
     }
 
+    pub fn custom_url(&mut self, custom_url: &str) -> &mut Self {
+        self.custom_url= Some(custom_url.to_owned());
+        self
+    }
+
     /// Set the repo owner, used to build a github api url
     pub fn repo_owner(&mut self, owner: &str) -> &mut Self {
         self.repo_owner = Some(owner.to_owned());

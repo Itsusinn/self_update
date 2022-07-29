@@ -11,6 +11,11 @@ authors = ["James Kominick <james@kominick.com>"]
 exclude = ["/ci/*", ".travis.yml", "appveyor.yml"]
 edition = "2018"
 
+[package.metadata.i18n]
+available-locales = ["en-US", "zh-CN"]
+default-locale = "en-US"
+load-path = "locales"
+
 [dependencies]
 serde_json = "1"
 tempfile = "3"
@@ -25,6 +30,8 @@ indicatif = "0.16"
 quick-xml = "0.22"
 regex = "1"
 log = "0.4"
+rust-i18n = { branch = "main", git = "https://github.com/Itsusinn/rust-i18n.git"}
+once_cell = "1.13.0"
 
 [features]
 default = ["reqwest/default-tls"]

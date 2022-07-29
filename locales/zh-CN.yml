@@ -1,0 +1,13 @@
+---
+zh-CN:
+  check-current-version: 正在检查当前版本... v%{version}
+  check-target-arch: 正在检查架构... %{target_arch}
+  prompt: |
+    %{bin_name} 发行版状态
+    当前文件: %{bin_install_path}
+    新发行版: %{target_asset_name}
+    新发行版下载链接: %{target_asset_url}
+    新发行版将被下载、解压, 且现存二进制将被替换.
+  prompt-confirm: 您想继续吗? [Y/n]
+  compatible: 新发行版是 SemVer 兼容的
+  not-compatible: 新发行版是 SemVer *不*兼容的

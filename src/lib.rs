@@ -1,3 +1,4 @@
+
 #![cfg_attr(feature = "cargo-clippy", deny(clippy::all))]
 /*!
 
@@ -67,6 +68,7 @@ Leading directories will be stripped from the file name allowing the use of subd
 and any file not matching the format, or not matching the provided prefix string, will be ignored.
 
 ```rust
+
 use self_update::cargo_crate_version;
 
 fn update() -> Result<(), Box<::std::error::Error>> {
@@ -129,6 +131,9 @@ fn update() -> Result<(), Box<::std::error::Error>> {
 
 */
 
+
+
+use reqwest::Proxy;
 pub use tempfile::TempDir;
 
 #[cfg(feature = "compression-flate2")]
@@ -136,12 +141,17 @@ use either::Either;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::header;
 use std::cmp::min;
+use std::env;
 use std::fs;
 use std::io;
 use std::path;
 
 #[macro_use]
 extern crate log;
+
+#[macro_use]
+extern crate rust_i18n;
+i18n!("locales");
 
 #[macro_use]
 mod macros;
@@ -673,7 +683,29 @@ impl Download {
         }
 
         set_ssl_vars!();
-        let resp = reqwest::blocking::Client::new()
+        let mut builder = reqwest::blocking::Client::builder();
+        let https_proxy = env::var("HTTPS_PROXY")
+            .and(env::var("https_proxy"))
+            .and(env::var("ALL_PROXY"))
+            .and(env::var("all_proxy"));
+        match https_proxy {
+            Ok(v) => {
+                builder = builder.proxy(Proxy::https(v)?)
+            },
+            Err(_) => {},
+        }
+        let http_proxy = env::var("HTTP_PROXY")
+            .and(env::var("http_proxy"))
+            .and(env::var("ALL_PROXY"))
+            .and(env::var("all_proxy"));
+        match http_proxy {
+            Ok(v) => {
+                builder = builder.proxy(Proxy::http(v)?)
+            },
+            Err(_) => {},
+        }
+        let resp = builder
+            .build()?
             .get(&self.url)
             .headers(headers)
             .send()?;

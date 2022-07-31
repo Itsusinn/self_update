@@ -158,7 +158,9 @@ pub trait ReleaseUpdate {
                 let release = self.get_latest_release()?;
                 {
                     println(show_output, &format!("v{}", release.version));
-
+                    if bypass && current_version==release.version {
+                        return Ok(UpdateStatus::UpToDate);
+                    }
                     if !bypass && !version::bump_is_greater(&current_version, &release.version).unwrap_or_else(|_|
                         // TODO logging
                         false

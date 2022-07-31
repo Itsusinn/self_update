@@ -153,12 +153,16 @@ pub trait ReleaseUpdate {
 
         let release = match self.target_version() {
             None => {
+                let bypass = std::env::var("BYPASS_CHECK").unwrap_or_else(|_| "0".to_string()) == "1";
                 print_flush(show_output, "Checking latest released version... ")?;
                 let release = self.get_latest_release()?;
                 {
                     println(show_output, &format!("v{}", release.version));
 
-                    if !version::bump_is_greater(&current_version, &release.version)? {
+                    if !bypass && !version::bump_is_greater(&current_version, &release.version).unwrap_or_else(|_|
+                        // TODO logging
+                        false
+                    ) {
                         return Ok(UpdateStatus::UpToDate);
                     }
 
@@ -169,11 +173,22 @@ pub trait ReleaseUpdate {
                             current_version, release.version
                         ),
                     );
-                    let qualifier =version::bump_is_compatible(&current_version, &release.version)?;
-                    println(
-                        show_output,
-                        if qualifier { t!("compatible") } else { t!("not-compatible") }.as_str()
-                    );
+                    if !bypass {
+                        let qualifier = version::bump_is_compatible(&current_version, &release.version).unwrap_or_else(|_| {
+                            // TODO logging
+                            false
+                        });
+                        println(
+                            show_output,
+                            if qualifier { t!("compatible") } else { t!("not-compatible") }.as_str()
+                        );
+                    } else {
+                        println(
+                            show_output,
+                            t!("bypass").as_str()
+                        );
+                    }
+
                 }
                 release
             }
@@ -198,7 +213,7 @@ pub trait ReleaseUpdate {
             ));
         }
         if prompt_confirmation {
-            confirm(&t!("prompt-confirm",bin_name = &bin_name));
+            confirm(&t!("prompt-confirm",bin_name = &bin_name))?;
         }
 
         let tmp_archive_dir_prefix = format!("{}_download", bin_name);

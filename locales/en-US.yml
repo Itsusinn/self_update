@@ -12,3 +12,4 @@ en-US:
   prompt-confirm: Do you want to continue? [Y/n]
   compatible: New release is compatible
   not-compatible: New release is *Not* compatible
+  bypass: New release SemVer compatible check skipped

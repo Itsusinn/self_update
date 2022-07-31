@@ -11,3 +11,4 @@ zh-CN:
   prompt-confirm: 您想继续吗? [Y/n]
   compatible: 新发行版是 SemVer 兼容的
   not-compatible: 新发行版是 SemVer *不*兼容的
+  bypass: 新发行版 SemVer 兼容检查已跳过

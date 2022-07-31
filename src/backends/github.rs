@@ -460,29 +460,65 @@ impl Update {
 
 impl ReleaseUpdate for Update {
     fn get_latest_release(&self) -> Result<Release> {
+        let enable_pre_release = std::env::var("GH_PRE_RELEASE").unwrap_or_else(|_| "0".to_string()) == "1";
+
         set_ssl_vars!();
-        let api_url = format!(
-            "{}/repos/{}/{}/releases/latest",
-            self.custom_url
-                .as_ref()
-                .unwrap_or(&"https://api.github.com".to_string()),
-            self.repo_owner,
-            self.repo_name
-        );
-        let resp = reqwest::blocking::Client::new()
-            .get(&api_url)
-            .headers(api_headers(&self.auth_token)?)
-            .send()?;
-        if !resp.status().is_success() {
-            bail!(
-                Error::Network,
-                "api request failed with status: {:?} - for: {:?}",
-                resp.status(),
-                api_url
-            )
+        let res = if enable_pre_release {
+            let api_url = format!(
+                "{}/repos/{}/{}/releases",
+                self.custom_url
+                    .as_ref()
+                    .unwrap_or(&"https://api.github.com".to_string()),
+                self.repo_owner,
+                self.repo_name
+            );
+            let resp = reqwest::blocking::Client::new()
+                .get(&api_url)
+                .headers(api_headers(&self.auth_token)?)
+                .send()?;
+            if !resp.status().is_success() {
+                bail!(
+                    Error::Network,
+                    "api request failed with status: {:?} - for: {:?}",
+                    resp.status(),
+                    api_url
+                )
+            }
+            let json = resp.json::<serde_json::Value>()?;
+            let release_list = json.as_array().unwrap();
+            release_list.into_iter().find(|it|{
+                it.get("prerelease").unwrap().as_bool().unwrap() && !it.get("draft").unwrap().as_bool().unwrap()
+            }).map(|v| v.to_owned())
+        } else { None };
+        match res {
+            Some(v) => {
+                Release::from_release(&v)
+            },
+            None => {
+                let api_url = format!(
+                    "{}/repos/{}/{}/releases/latest",
+                    self.custom_url
+                        .as_ref()
+                        .unwrap_or(&"https://api.github.com".to_string()),
+                    self.repo_owner,
+                    self.repo_name
+                );
+                let resp = reqwest::blocking::Client::new()
+                    .get(&api_url)
+                    .headers(api_headers(&self.auth_token)?)
+                    .send()?;
+                if !resp.status().is_success() {
+                    bail!(
+                        Error::Network,
+                        "api request failed with status: {:?} - for: {:?}",
+                        resp.status(),
+                        api_url
+                    )
+                }
+                let json = resp.json::<serde_json::Value>()?;
+                Release::from_release(&json)
+            },
         }
-        let json = resp.json::<serde_json::Value>()?;
-        Release::from_release(&json)
     }
 
     fn get_release_version(&self, ver: &str) -> Result<Release> {

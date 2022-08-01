@@ -139,7 +139,6 @@ impl ReleaseList {
 ///
 /// Configure download and installation from
 /// `https://<bucket_name>.s3.<region>.amazonaws.com/<asset filename>`
-#[derive(Debug)]
 pub struct UpdateBuilder {
     end_point: EndPoint,
     bucket_name: Option<String>,
@@ -367,7 +366,6 @@ impl UpdateBuilder {
 }
 
 /// Updates to a specified or latest release distributed via S3
-#[derive(Debug)]
 pub struct Update {
     end_point: EndPoint,
     bucket_name: String,

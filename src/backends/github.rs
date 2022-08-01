@@ -225,7 +225,6 @@ impl ReleaseList {
 ///
 /// Configure download and installation from
 /// `https://api.github.com/repos/<repo_owner>/<repo_name>/releases/latest`
-#[derive(Debug)]
 pub struct UpdateBuilder {
     repo_owner: Option<String>,
     repo_name: Option<String>,
@@ -434,7 +433,6 @@ impl UpdateBuilder {
 }
 
 /// Updates to a specified or latest release distributed via GitHub
-#[derive(Debug)]
 pub struct Update {
     repo_owner: String,
     repo_name: String,

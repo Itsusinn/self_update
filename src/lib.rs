@@ -612,7 +612,6 @@ impl<'a> Move<'a> {
 /// Download things into files
 ///
 /// With optional progress bar
-#[derive(Debug)]
 pub struct Download {
     show_progress: bool,
     url: String,

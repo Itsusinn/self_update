@@ -209,7 +209,6 @@ impl ReleaseList {
 ///
 /// Configure download and installation from
 /// `https://gitlab.com/api/v4/projects/<repo_owner>%2F<repo_name>/releases`
-#[derive(Debug)]
 pub struct UpdateBuilder {
     repo_owner: Option<String>,
     repo_name: Option<String>,
@@ -411,7 +410,6 @@ impl UpdateBuilder {
 }
 
 /// Updates to a specified or latest release distributed via GitHub
-#[derive(Debug)]
 pub struct Update {
     repo_owner: String,
     repo_name: String,

@@ -627,6 +627,7 @@ impl Download {
             headers: reqwest::header::HeaderMap::new(),
             progress_style: ProgressStyle::default_bar()
                 .template("[{elapsed_precise}] [{bar:40}] {bytes}/{total_bytes} ({eta}) {msg}")
+                .unwrap_or_else(|_| ProgressStyle::default_bar())
                 .progress_chars("=>-"),
         }
     }
